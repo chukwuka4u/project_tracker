@@ -1,4 +1,5 @@
 import express from "express"
+import cors from "cors"
 import pool from "./db/mysql.js"
 import readSqlFile from "./db/config/reader.js"
 import { createProject, getProject, createUser, getUser, updateProject, deleteProject, getActivityLog, createActivityLog } from "./db/queries.js";
