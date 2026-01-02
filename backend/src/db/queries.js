@@ -21,12 +21,12 @@ async function createUser(email, name, password, role) {
 
 //project
 
-async function getProject(id) {
+async function getProject() {
     const [row] = await pool.query(`
         SELECT *
         FROM project
-        WHERE id = ?
-        `, [id])
+        LIMIT 5
+        `)
         return row
 }
 
@@ -38,16 +38,18 @@ async function createProject(title, summary, status, created_by) {
     return row
 }
 
-async function updateProject(id, status, updatedBy) {
+async function updateProject(id, title, summary, status, updatedBy) {
     const [row] = await pool.query(`
         UPDATE project
         SET 
         status = ?,
+        title = ?,
+        summary = ?,
         updated_at = CURRENT_TIMESTAMP,
         updated_by = ?
         WHERE id = ?
-        `, [status, updatedBy, id])
-    return [row]
+        `, [status, title, summary, updatedBy, id])
+    return row
 }
 
 async function deleteProject(id) {
@@ -75,6 +77,6 @@ async function createActivityLog(projectId, action, userId) {
         INSERT INTO activity_log (project_id, project_title, action, user_id, user_name)
         VALUES (?, ?, ?, ?, ?)
         `, [projectId, project[0].title, action, userId, user[0].name])
-    return {...row, ...user, ...project}
+    return row
 }
 export { createUser, getUser, getProject, createProject, updateProject, deleteProject, getActivityLog, createActivityLog }

@@ -17,22 +17,62 @@ app.get('/health', async (req, res) => {
   }
 })
 
-app.get('/getActivityLogs', async (req, res) => {
-  const project = await getActivityLog()
-  res.json({project: project})
-})
-app.get('/createActivityLog', async (req, res) => {
-  const user = await createActivityLog(3, "updated", 1)
-  res.json({user: user})
-})
-app.get('/updateProject/:id', async (req, res) => {
+//get user
+app.get('/api/user/:id', async (req, res) => {
   const id = req.params.id
-  const user = await updateProject(id, "ongoing", 1)
-  res.json({user: user})
+  const user = await getUser(id)
+  res.json({user: user[0]})
 })
 
-app.get('/', (req, res) => {
-    res.json({message: "hello world"})
+//create user
+app.post('/api/user/new', async (req, res) => {
+  const {email, name, password, role} = req.body
+  const result = await createUser(email, name, password, role)
+  const id = result.insertId
+  const user = await getUser(id)
+  res.json({user: user[0]})
+})
+
+//get all projects
+app.get('/api/project', async (req, res) => {
+  const projects = await getProject()
+  res.json({projects: projects})
+})
+
+//create project
+app.post('/api/project/new', async (req, res) => {
+  const {title, summary, status, createdBy} = req.body
+  const result = await createProject(title, summary, status, createdBy)
+  const id = result.insertId
+  res.json({message: "created new project " + id })
+})
+
+//edit project
+app.post('/api/project/edit', async (req, res) => {
+  const {id, title, summary, status, updatedBy} = req.body
+  const result = await updateProject(id, title, summary, status, updatedBy)
+  res.status(200).json({project: result})
+})
+
+//delete a project
+app.delete('/api/project/delete/:id', async (req, res) => {
+  const id = req.params.id
+  const result = await deleteProject(id)
+  res.json({result: result})
+})
+
+//get all activity logs
+app.get('/api/logs', async (req, res) => {
+  const result = await getActivityLog()
+  res.json({result: result})
+})
+
+//create new activity log
+app.post('/api/logs/new', async (req, res) => {
+  const {projectId, action, userId } = req.body
+  const result = await createActivityLog(projectId, action, userId)
+  const id = result.insertId
+  res.json({id: id})
 })
 
 export default app;
