@@ -2,7 +2,7 @@ import express from "express"
 import cors from "cors"
 import pool from "./db/mysql.js"
 import readSqlFile from "./db/config/reader.js"
-import { createProject, getProject, createUser, getUser, updateProject, deleteProject, getActivityLog, createActivityLog } from "./db/queries.js";
+import { authUser, createProject, getProject, createUser, getUser, updateProject, deleteProject, getActivityLog, createActivityLog } from "./db/queries.js";
 
 const app = express();
 app.use(express.json())
@@ -36,6 +36,13 @@ app.get('/health', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error })
   }
+})
+
+//auth user
+app.post('/api/user/auth', async (req, res) => {
+  const {email, password} = req.body
+  const result = await authUser(email, password)
+  res.json({user: result})
 })
 
 //get user

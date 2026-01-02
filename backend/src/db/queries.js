@@ -1,5 +1,27 @@
 import pool from "./mysql.js"
 
+//authenticate
+async function authUser(email, password) {
+    const [rows] = await pool.query(
+    'SELECT * FROM user WHERE email = ?',
+    [email]
+    )
+
+    if (rows.length === 0) {
+        return {error: 'Invalid credentials'}
+    }
+
+    const user = rows[0]
+
+    const isMatch = password == user.password
+
+    if (!isMatch) {
+        return {error: 'Invalid credentials'}
+    }
+    return user
+}
+
+
 //users
 
 async function getUser(id) {
@@ -79,4 +101,4 @@ async function createActivityLog(projectId, action, userId) {
         `, [projectId, project[0].title, action, userId, user[0].name])
     return row
 }
-export { createUser, getUser, getProject, createProject, updateProject, deleteProject, getActivityLog, createActivityLog }
+export { authUser, createUser, getUser, getProject, createProject, updateProject, deleteProject, getActivityLog, createActivityLog }
