@@ -1,4 +1,6 @@
-import { useState } from 'react';
+"use client"
+import { useState, useEffect } from 'react';
+import { TrackerAPI } from '@/lib/requests'
 // import { useNavigate } from 'react-router-dom';
 // import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -17,17 +19,25 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Project } from '@/lib/types';
 
 const Dashboard = () => {
-  // const { user, logout } = useAuth();
   const user = {role: "admin", name: "ade"}
   const { projects } = useProjects();
   const router = useRouter();
-  // const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<ProjectStatus | 'all'>('all');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
+
+
+ useEffect(() => {
+  (
+    async function () {
+      const result = await TrackerAPI.getProject()
+      console.log(result)
+    }
+  )()
+ }, []) 
+  
   const handleLogout = () => {
-    // logout();
     router.push('/auth/login');
   };
 
@@ -56,8 +66,7 @@ const Dashboard = () => {
               <Shield className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-lg font-heading font-bold text-foreground">Gigasec</h1>
-              <p className="text-xs text-muted-foreground">Project Tracker</p>
+              <h1 className="text-lg font-heading font-bold text-foreground">Project Tracker</h1>
             </div>
           </div>
 

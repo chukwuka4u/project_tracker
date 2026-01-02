@@ -1,8 +1,9 @@
+"use client"
 import { useState } from 'react';
 import { Project } from '@/lib/types';
 // import { useAuth } from '@/context/AuthContext';
 import { useProjects } from '@@/app/context/ProjectContext';
-import { getUserById } from '@/data/mockData';
+import { getUserById } from '@/lib/mockData';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -48,7 +49,7 @@ const statusConfig = {
 };
 
 const ProjectCard = ({ project }: ProjectCardProps) => {
-  const { user } = useAuth();
+  const user = {id: "1", role: "admin", name: "john"} //useAuth();
   const { deleteProject } = useProjects();
   const { toast } = useToast();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);

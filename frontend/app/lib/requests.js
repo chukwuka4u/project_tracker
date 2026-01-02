@@ -1,125 +1,152 @@
-const BASE_URL = "http://localhost:3001";
-
+const BASE_URL = "https://project-tracker-dhse.onrender.com";
 export const TrackerAPI = {
-    
-    searchMealsByName: async (query) => {
+    //get user
+    getUser: async (id) => {
         try {
-            const response = await fetch(`${BASE_URL}/search.php?s=${encodedURIComponent(query)}`);
+            const response = await fetch(`${BASE_URL}/api/user/${id}`, 
+                {
+                    method: "GET",
+                }
+            );
+            console.log(response)
             const data = await response.json();
-            return data.meals || [];
+            return data.user || null;
+        } catch (error) {
+            console.error("Error fetching user:", error);
+            return null;
+        }
+    },
+
+    //create user
+    createUser: async (form) => {
+        try {
+            const {email, name, password, role} = form
+            const response = await fetch(`${BASE_URL}/api/user/new`, 
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json" 
+                    },
+                    body: JSON.stringify({email, name, password, role})
+                }
+            );
+            const data = await response.json();
+            return data.user || null;
+        } catch (error) {
+            console.error("Error creating user:", error);
+            return null;
+        }
+    },
+
+    //get projects
+    getProject: async () => {
+        try {
+            const response = await fetch(`${BASE_URL}/api/project`, 
+                {
+                    method: "GET",
+                }
+            );
+            const data = await response.json();
+            return data.projects || [];
         } catch (error) {
             console.error("Error searching meals by name:", error);
             return [];
         }
     },
 
-    //lookup full meal details by id
-    getMealById: async (id) => {
+    //create project
+    createProject: async (form) => {
         try {
-            const response = await fetch(`${BASE_URL}/lookup.php?i={id}`);
+            const {status, title, summary, createdBy} = form
+            const response = await fetch(`${BASE_URL}/api/project/new`, 
+                 {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json" 
+                    },
+                    body: JSON.stringify({status, title, summary, createdBy})
+                }
+            );
             const data = await response.json();
-            return data.meals ? data.meals[0] : null;
+            return data.message;
         } catch (error) {
-            console.error("Error getting meal by id:", error);
+            console.error("Error creating new project:", error);
+            return null;
+        }
+    },
+    //edit project
+    editProject: async (form) => {
+        try {
+            const {status, title, summary, updatedBy, id} = form
+            const response = await fetch(`${BASE_URL}/api/project/new`, 
+                 {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json" 
+                    },
+                    body: JSON.stringify({status, title, summary, updatedBy, id})
+                }
+            );
+            const data = await response.json();
+            return data.project || null;
+        } catch (error) {
+            console.error("Error editing the project: ", error);
             return null;
         }
     },
 
-    //lookup a single random meal
-    getRandomMeal: async () => {
+    //delete project
+    deleteProject: async (id) => {
         try {
-            const response = await fetch(`${BASE_URL}/random.php`)
-            const data = await response.json();
-            return data.meals ? data.meals[0] : null;
+            const response = await fetch(`${BASE_URL}/api/delete/${id}`, 
+                {
+                    method: "DELETE",
+                }
+            );
+            // const data = await response.json();
+            return response.status || [];
         } catch (error) {
-            console.error("Error getting random meal:", error)
+            console.error("Error deleting project:", error);
+            return [];
+        }
+    },
+
+    //get logs
+    getLogs: async () => {
+        try {
+            const response = await fetch(`${BASE_URL}/api/logs`, 
+                {
+                    method: "GET",
+                }
+            );
+            const data = await response.json();
+            return data.result || [];
+        } catch (error) {
+            console.error("Error fetching logs:", error);
+            return [];
+        }
+    },
+
+    //create log
+    createLog: async (params) => {
+        const {projectId, action, userId}  = params
+        try {
+            const response = await fetch(`${BASE_URL}/api/logs/new`, 
+                 {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json" 
+                    },
+                    body: JSON.stringify({projectId, action, userId})
+                }
+            );
+            const data = await response.json();
+            return data.id || null;
+        } catch (error) {
+            console.error("Error creating activity log:", error);
             return null;
         }
     },
-    //lookup a multiple random meals
-    getRandomMeals: async (count = 6) => {
-        try {
-            const promises = Array(count)
-                .fill()
-                .map(() => MealAPI.getRandomMeal())
-            const meals = await Promise.all(promises)
-            console.log(meals[0])
-            return meals.filter((meal) => meal !== null);
-        } catch (error) {
-            console.error("Error getting random meals:", error)
-            return [];
-        }
-    },
 
-    //list all meal categories
-    getCategories: async () => {
-        try {
-            const response = await fetch(`${BASE_URL}/categories.php`)
-            const data = await response.json();
-            return data.categories || [];
-        } catch (error) {
-            console.error("Error getting categories:", error);
-            return [];
-        }
-    },
-
-    //filter by main ingredient
-    filterByIngredient: async (ingredient) => {
-        try {
-            const response = await fetch(`${BASE_URL}/filter.php?i=${encodedURIComponent(ingredient)}`);
-            const data = await response.json();
-            return data.meals || [];
-        } catch (error) {
-            console.error("Error filtering by ingredients:", error);
-            return [];
-        }
-    },
-    //filter by category
-    filterByCategory: async (category) => {
-        try {
-            const response = await fetch(`${BASE_URL}/filter.php?i=${encodedURIComponent(category)}`);
-            const data = await response.json();
-            return data.meals || [];
-        } catch (error) {
-            console.error("Error filtering by category:", error);
-            return [];
-        }
-    },
-    //transform TheMealDB meal data to our app format
-    transformMealData: (meal) => {
-        if (!meal) return null;
-
-        //extract ingredients from the meal object
-        const ingredients = [];
-        for (let i = 1; i <= 20; i++) {
-            const ingredient = meal[`strIngredient${i}`];
-            const measure = meal[`strMeasure${i}`];
-            if (ingredient && ingredient.trim()) {
-                const measureText = measure && measure.trim() ? `${measure.trim()}` : "";
-                ingredients.push(`${measureText}${ingredient.trim()}`);
-
-            }
-        }
-
-        //extract instructions
-        const instructions = meal.strInstructions
-            ? meal.strInstructions.split(/\r?\n/).filter((step) => step.trim())
-            : [];
-
-        return {
-            id: meal.idMeal,
-            title: meal.strMeal,
-            description: meal.strInstructions
-                ? meal.strInstructions.substring(0, 120) + "..."
-                : "Delicious meal from TheMealDB",
-            image: meal.strMealThumb,
-            cookTime: "30 minutes",
-            servings: 4,
-            category: meal.strCategory || "Main Course",
-            area: meal.strArea,
-            ingredients,
-            instructions,
-            originalData: meal,
-        };
-    }
+    
 }

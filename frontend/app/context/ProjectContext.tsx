@@ -1,3 +1,4 @@
+"use client"
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { Project, ActivityLog, ProjectStatus } from '@/lib/types';
 import { mockProjects, mockActivityLogs } from '@/lib/mockData';
