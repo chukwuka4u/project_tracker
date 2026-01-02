@@ -1,6 +1,4 @@
 import mysql from 'mysql2/promise'
-import fs from 'fs'
-import path from 'path'
 import dotenv from 'dotenv'
 dotenv.config() 
 
@@ -15,9 +13,7 @@ const pool = mysql.createPool({
 
   ssl: {
     rejectUnauthorized: true,
-    ca: fs.readFileSync(
-      path.join(process.cwd(), 'certs', 'ca.pem')
-    ),
+    ca: process.env.MYSQL_CA_CERT,
   },
 
   enableKeepAlive: true,
