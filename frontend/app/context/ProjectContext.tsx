@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { Project, ActivityLog, ProjectStatus } from '@/lib/types';
-// import { mockProjects, mockActivityLogs } from '@/data/mockData';
+import { mockProjects, mockActivityLogs } from '@/lib/mockData';
 // import { useAuth } from './AuthContext';
 
 interface ProjectContextType {
@@ -17,7 +17,7 @@ const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [projects, setProjects] = useState<Project[]>(mockProjects);
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>(mockActivityLogs);
-  const { user } = {} //useAuth();
+  const user = {id: "1", role: "admin", name: "john"} //useAuth();
 
   const addActivityLog = useCallback((
     projectId: string,
