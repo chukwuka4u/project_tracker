@@ -1,8 +1,8 @@
 "use client"
 import { useState } from 'react';
+import { signIn, useSession } from "next-auth/react"
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-// import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,17 +15,18 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-//   const { login } = useAuth();
-    const router = useRouter()
+  const { data: session } = useSession()
+
+  const router = useRouter()
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    const success = true //await login(email, password);
-
-    if (success) {
+    signIn("credentials", {email: email, password : password, callbackUrl: "/"});
+    
+    if (session?.user?.email) {
       toast({
         title: 'Welcome back!',
         description: 'You have successfully logged in.',
@@ -97,11 +98,11 @@ const Login = () => {
               </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full bg-black text-white" disabled={isLoading}>
                 {isLoading ? 'Signing in...' : 'Sign in'}
               </Button>
               <p className="text-sm text-muted-foreground text-center">
-                Don&asp;t have an account?{' '}
+                Dont have an account?{' '}
                 <Link href={'/auth/register'} className="text-primary hover:underline font-medium">
                   Register
                 </Link>

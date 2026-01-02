@@ -1,5 +1,27 @@
 const BASE_URL = "https://project-tracker-dhse.onrender.com";
 export const TrackerAPI = {
+
+    //auth user
+    authUser: async (form) => {
+        try {
+            const {email, password} = form
+            const response = await fetch(`${BASE_URL}/api/user/auth`, 
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json" 
+                    },
+                    body: JSON.stringify({email, password})
+                }
+            );
+            const data = await response.json();
+            return data.user || null;
+        } catch (error) {
+            console.error("Error creating user:", error);
+            return null;
+        }
+    },
+
     //get user
     getUser: async (id) => {
         try {

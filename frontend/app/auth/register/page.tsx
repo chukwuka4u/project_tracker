@@ -148,7 +148,7 @@ const router = useRouter();
               </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full bg-black text-white" disabled={isLoading}>
                 {isLoading ? 'Creating account...' : 'Create account'}
               </Button>
               <p className="text-sm text-muted-foreground text-center">
