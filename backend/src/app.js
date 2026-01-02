@@ -6,6 +6,26 @@ import { createProject, getProject, createUser, getUser, updateProject, deletePr
 const app = express();
 app.use(express.json())
 
+
+const allowedOrigins = [
+  'http://localhost:3001',
+  'http://localhost:3000',
+]
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true)
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true)
+    }
+
+    return callback(new Error('Not allowed by CORS'))
+  },
+  credentials: true
+}))
+
+
 app.get('/health', async (req, res) => {
   try {
     const sqlstring = await readSqlFile("src/db/migrations/0002_migrate.sql")
