@@ -17,16 +17,16 @@ import ProjectDialog from '@/components/ProjectDialog';
 import ActivityLogPanel from '@/components/ActivityLogPanel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Project } from '@/lib/types';
+import { signOut, useSession } from 'next-auth/react';
 
 const Dashboard = () => {
-  const user = {role: "admin", name: "ade"}
+  const {data: session} = useSession()
+  const user = {role: session?.user!.role, name: session?.user!.name}
   const { projects } = useProjects();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<ProjectStatus | 'all'>('all');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-
-
 
  useEffect(() => {
   (
@@ -38,7 +38,8 @@ const Dashboard = () => {
  }, []) 
   
   const handleLogout = () => {
-    router.push('/auth/login');
+    signOut();
+    // router.push('/auth/login');
   };
 
   const filteredProjects = projects.filter((project : Project) => {

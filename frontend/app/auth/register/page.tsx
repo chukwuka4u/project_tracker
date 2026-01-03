@@ -1,9 +1,8 @@
 "use client"
 import { useState } from 'react';
 import Link from 'next/link';
+import { signIn, useSession } from "next-auth/react"
 import { useRouter } from 'next/navigation';
-// import { useNavigate, Link } from 'react-router-dom';
-// import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,7 +16,8 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-//   const { register } = useAuth();
+  const { data: session} = useSession()
+
 const router = useRouter();
   const { toast } = useToast();
 
@@ -44,9 +44,9 @@ const router = useRouter();
 
     setIsLoading(true);
 
-    const success = true
-
-    if (success) {
+    signIn("credentials", {email: email, password : password, name: name, callbackUrl: "/"});
+        
+        if (session?.user?.email) {
       toast({
         title: 'Account created!',
         description: 'Welcome to Gigasec Project Tracker.',
